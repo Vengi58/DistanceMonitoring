@@ -65,6 +65,17 @@ When the `DistanceData` is received it is used to identify the severity of the d
 
 This standalon project is used to connect to the MQTT broker started by the ConsoleBroker and to simulate data publishing to a specific topic. Similarly to the ConsoleBroker, the address, port number and topic of the broker is configured in the application code currently. 
 
-### Demo
+### DistanceMoniorTests
+
+This project contains a few tests to test the end to end functionality of the DistanceMonitoring project.
+The tests mock the `IDistanceDataController` and the `IMqttAdapter` and fire mocked events to simulated the message streaming and event propagating behaviour of the application.
 
 ### Notes, considerations
+
+ - To be able to test the application, the `ConsoleBroker` and the `DistanceMonitoring` projects should be started at the same time. 
+ - The application could connect to only one broker at a time, and it should be configured at the `Startup.cs` when adding services in the DI section.
+ - The application runs as a console app and shuts down when a Ctrl + C key is hit.
+ - There is no logging in the imlpementation currently, but NLog could be easily added to the project.
+ - The `ConsoleBroker` and the `MqttPublisher` projects should use a seprate configuration file, instead of using harcoded values for the broker connection details.
+ - The solution contains tests, but only end-to-end test, mocking out the external dependencies. Further unit tests could be added to test the smaller code parts.
+ - Exception handling, input validation and error handling could be further improved accross the code.
