@@ -29,24 +29,6 @@ namespace DistanceMonitoring.Controller
         //    //adapter = new MqttAdapter("distanceData");
         //}
 
-        public void PostDistanceData(DistanceData distanceData)
-        {
-            var payload = JsonSerializer.Serialize(distanceData);
-            var testMessage = new MqttApplicationMessageBuilder()
-                       .WithTopic("distanceData")
-                       .WithPayload(payload)
-                       .WithExactlyOnceQoS()
-                       .WithRetainFlag()
-                       .Build();
-
-
-            //if (_client.IsConnected)
-            //{
-            //    Console.WriteLine($"publishing at {DateTime.UtcNow}");
-            //    _client.PublishAsync(testMessage);
-            //}
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
