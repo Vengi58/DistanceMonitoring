@@ -23,12 +23,6 @@ namespace DistanceMonitoring.Controller
             };
         }
 
-        //public DistanceDataController() : this (new AWSIoTAdapter("distanceData"))
-        //{
-        //    //adapter = new AWSIoTAdapter("distanceData");
-        //    //adapter = new MqttAdapter("distanceData");
-        //}
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -37,23 +31,12 @@ namespace DistanceMonitoring.Controller
                 {
                     adapter.Dispose();
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
 
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~DistanceDataController()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
-
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
