@@ -9,26 +9,15 @@ namespace ConsoleBroker
     {
         static void Main(string[] args)
         {
-            //configure options
             var optionsBuilder = new MqttServerOptionsBuilder()
                 .WithConnectionValidator(c =>
                 {
-                    Console.WriteLine($"{c.ClientId} connection validator for c.Endpoint: {c.Endpoint}");
+                    Console.WriteLine($"{c.ClientId} connection validator for endpoint: {c.Endpoint}");
                     c.ReasonCode = MqttConnectReasonCode.Success;
-                })
-                .WithApplicationMessageInterceptor(context =>
-                {
-                    //Console.WriteLine("WithApplicationMessageInterceptor block merging data");
-                    //var newData = Encoding.UTF8.GetBytes(DateTime.Now.ToString("O"));
-                    //var oldData = context.ApplicationMessage.Payload;
-                    //var mergedData = newData.Concat(oldData).ToArray();
-                    //context.ApplicationMessage.Payload = mergedData;
                 })
                 .WithConnectionBacklog(100)
                 .WithDefaultEndpointPort(1884);
 
-
-            //start server
             var mqttServer = new MqttFactory().CreateMqttServer();
             mqttServer.StartAsync(optionsBuilder.Build()).Wait();
 

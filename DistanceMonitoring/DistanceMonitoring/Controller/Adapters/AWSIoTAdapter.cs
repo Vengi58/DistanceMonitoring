@@ -2,34 +2,35 @@
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using uPLibrary.Networking.M2Mqtt;
-using System.IO;
 using uPLibrary.Networking.M2Mqtt.Messages;
+using DistanceMonitoring.Configuration;
 
 namespace DistanceMonitoring.Controller.Adapters
 {
     public class AWSIoTAdapter : IMqttAdapter
     {
         public event IMqttAdapter.MessageReceivedEventHandler MessageReceived;
-        private readonly MqttClient client;
-        public AWSIoTAdapter(string topic)
+        private MqttClient client;
+        private readonly AWSIoTConfiguration config;
+        public AWSIoTAdapter(IConfigProvider configProvider)
         {
-            string iotEndpoint = "<ENDPOINT>";
+            config = configProvider.GetAWSIoTConfiguration();
+            StartSubscriber();
+        }
+
+        private void StartSubscriber()
+        {
             Console.WriteLine("AWS IoT Dotnet message publisher starting..");
+            var caCert = X509Certificate.CreateFromCertFile(config.CAcertPath);
+            var clientCert = new X509Certificate2(config.ThingCertPath, config.ThingCertPassword);
 
-            int brokerPort = 8883;
-
-            var caCert = X509Certificate.CreateFromCertFile(Path.Combine(@"thing_certs", "root-CA.crt"));
-            var clientCert = new X509Certificate2(Path.Combine(@"thing_certs", "distance-thing.pfx"), "<PASSWORD>");
-
-            client = new MqttClient(iotEndpoint, brokerPort, true, caCert, clientCert, MqttSslProtocols.TLSv1_2);
+            client = new MqttClient(config.EndpointName, config.BrokerPort, true, caCert, clientCert, MqttSslProtocols.TLSv1_2);
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
             client.MqttMsgSubscribed += Client_MqttMsgSubscribed;
+            client.Connect(config.ClientId);
+            Console.WriteLine($"Connected to AWS IoT with client id: {config.ClientId}.");
 
-            string clientId = Guid.NewGuid().ToString();
-            client.Connect(clientId);
-            Console.WriteLine($"Connected to AWS IoT with client id: {clientId}.");
-
-            client.Subscribe(new string[] { topic }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
+            client.Subscribe(new string[] { config.TopicName }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
         }
 
         private void Client_MqttMsgSubscribed(object sender, EventArgs e)

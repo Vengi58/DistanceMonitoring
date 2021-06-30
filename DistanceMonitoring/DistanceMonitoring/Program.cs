@@ -1,27 +1,47 @@
-﻿using DistanceMonitoring.Controller;
+﻿using DistanceMonitoring.Configuration;
+using DistanceMonitoring.Controller;
+using DistanceMonitoring.Controller.Adapters;
 using DistanceMonitoring.View;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DistanceMonitoring
 {
     class Program
     {
         private static ManualResetEvent manualResetEvent;
+
         static void Main(string[] args)
         {
-            //allow time for the broker to start when starting together in VS
-            Thread.Sleep(TimeSpan.FromSeconds(5));
-            using var controller = new DistanceDataController();
-            var monitor = new DistanceMonitor(controller);
-            monitor.StartMonitoring();
-
-            // Keep the main thread alive for the event receivers to get invoked
+            var application = ConfigureServices().Services.GetService<DistanceMonitor>();
+            application.StartMonitoring();
             KeepConsoleAppRunning(() =>
             {
                 Console.WriteLine("Shutting down..");
+                application.StopMonitoring();
             });
+        }
+
+        private static IHost ConfigureServices()
+        {
+            var configRoot = new ConfigurationBuilder()
+                .AddJsonFile($"appSettings.json", true, true)
+                .Build();
+            var appConfig = configRoot.GetSection("AppConfig").Get<AppConfig>();
+
+            return new HostBuilder()
+                    .ConfigureServices((hostContext, services) =>
+                    {
+                        services.AddOptions();
+                        services.AddSingleton<IConfigProvider>(c => new ConfigProvider(appConfig));
+                        services.AddSingleton<IMqttAdapter, MqttAdapter>();
+                        services.AddSingleton<IDistanceDataController, DistanceDataController>();
+                        services.AddTransient<DistanceMonitor>();
+                    })
+              .Build();
         }
         private static void KeepConsoleAppRunning(Action onShutdown)
         {

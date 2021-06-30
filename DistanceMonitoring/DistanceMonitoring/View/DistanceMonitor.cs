@@ -14,6 +14,10 @@ namespace DistanceMonitoring.View
         {
             controller.DistanceDataReceived += Controller_DistanceDataReceived;
         }
+        public void StopMonitoring()
+        {
+            controller.DistanceDataReceived -= Controller_DistanceDataReceived;
+        }
 
         private void Controller_DistanceDataReceived(object sender, DistanceDataEventArgs e)
         {

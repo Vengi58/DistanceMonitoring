@@ -60,8 +60,6 @@ namespace MqttPublisher
                 _client.ConnectAsync(_options).Wait();
 
                 SimulatePublish();
-
-                Console.WriteLine("Simulation ended! press any key to exit.");
             }
 
             catch (Exception e)

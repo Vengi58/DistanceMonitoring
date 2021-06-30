@@ -23,11 +23,11 @@ namespace DistanceMonitoring.Controller
             };
         }
 
-        public DistanceDataController() : this (new AWSIoTAdapter("distanceData"))
-        {
-            //adapter = new AWSIoTAdapter("distanceData");
-            //adapter = new MqttAdapter("distanceData");
-        }
+        //public DistanceDataController() : this (new AWSIoTAdapter("distanceData"))
+        //{
+        //    //adapter = new AWSIoTAdapter("distanceData");
+        //    //adapter = new MqttAdapter("distanceData");
+        //}
 
         public void PostDistanceData(DistanceData distanceData)
         {
